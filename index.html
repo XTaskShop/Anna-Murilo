@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anna & Murilo</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(circle at center, #000000 0%, #0a0a0a 100%);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body::before {
+    content:"";
+    position: fixed;
+    top:0; left:0;
+    width:200%; height:200%;
+    background: radial-gradient(white 1px, transparent 1px) repeat;
+    background-size: 4px 4px;
+    opacity: 0.05;
+    animation: shimmer 10s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes shimmer { from {transform: translate(0,0);} to {transform: translate(-100px,-100px);} }
+
+  .player-topo {
+    width: 320px;
+    margin: 40px auto 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #888;
+    color: black;
+    font-family: 'Segoe UI', sans-serif;
+    opacity: 0.92;
+  }
+
+  .cover {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .play-pause {
+    background: none;
+    border: none;
+    color: black;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .info-player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .track-title {
+    font-weight: bold;
+    font-size: 14px;
+    color: black;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress {
+    width: 0%;
+    height: 100%;
+    background: black;
+    transition: width 0.2s linear;
+  }
+
+  #currentTime {
+    font-size: 12px;
+    color: rgba(0,0,0,0.8);
+  }
+
+  #entrada {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at center, #111 0%, #000 80%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+
+  #entrada h2 {
+    font-size: 2em;
+    color: white;
+    margin-bottom: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typing 1.5s steps(30,end) forwards;
+  }
+
+  @keyframes typing { from {width:0} to {width:19ch} }
+
+  #botaoEntrar {
+    padding: 12px 28px;
+    font-size: 1em;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 0 10px white,0 0 25px rgba(255,255,255,0.3);
+    transition: all 0.3s;
+  }
+
+  #botaoEntrar:hover {
+    background: #000; color: #fff;
+    box-shadow: 0 0 25px white,0 0 50px rgba(255,255,255,0.5);
+  }
+
+  .carousel-container {
+    width: 320px;
+    height: 400px;
+    margin: 30px auto 40px;
+    overflow: hidden;
+    border-radius: 12px;
+    position: relative;
+    background: #000;
+    box-shadow: 0 0 25px rgba(255,255,255,0.2);
+  }
+
+  .carousel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+
+  .carousel img.active { opacity: 1; }
+
+  .contador {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 20px auto;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    backdrop-filter: blur(4px);
+  }
+
+  .mensagem {
+    max-width: 500px;
+    margin: 40px auto;
+    font-size: 17px;
+    line-height: 1.6;
+    padding: 25px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.05);
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .mensagem p {
+    margin-top: 15px;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 18px;
+  }
+
+  .coracao {
+    position: fixed;
+    color: #fff;
+    font-size: 1.5rem;
+    animation: cair linear infinite;
+    z-index: 1;
+    pointer-events: none;
+    text-shadow: 0 0 10px white,0 0 25px rgba(255,255,255,0.4);
+  }
+
+  @keyframes cair { from{top:-50px;opacity:1} to{top:100vh;opacity:0} }
+
+  .volume-alert {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    box-shadow: 0 0 25px white;
+    z-index: 1000;
+    display: none;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .copyright {
+    text-align: center;
+    margin-top: 40px;
+    padding: 15px;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Tela Inicial -->
+<div id="entrada">
+  <h2>💓Para Sempre Nós!💓</h2>
+  <button id="botaoEntrar">Entrar</button>
+</div>
+
+<!-- Mensagem de Volume -->
+<div class="volume-alert" id="volumeAlert">⚠️ Aumente o volume ⚠️</div>
+
+<!-- Música -->
+<audio id="audio" loop>
+  <source src="https://github.com/Mtussss123456789/Para-meu-amor/raw/main/aliança.mp3?raw=true" type="audio/mpeg">
+</audio>
+
+<!-- Player acima do carrossel -->
+<div class="player-topo" id="playerTopo">
+  <img src="https://i.imgur.com/8km0v9B.png" alt="Capa" class="cover">
+  <button id="playPauseBtn" class="play-pause">▶️</button>
+  <div class="info-player">
+    <div class="track-title">💍 Aliança</div>
+    <div class="progress-container">
+      <div id="progress" class="progress"></div>
+    </div>
+    <span id="currentTime">0:00 / 0:00</span>
+  </div>
+</div>
+
+<!-- Carrossel -->
+<div class="carousel-container">
+  <div class="carousel" id="carousel">
+    <img src="" alt="Foto 1" class="active">
+    <img src="" alt="Foto 2">
+    <img src="" alt="Foto 3">
+  </div>
+</div>
+
+<!-- Contador -->
+<div class="contador" id="contador">
+  ❤️ Eu te amo há:<br>
+  <span id="tempo"></span>
+</div>
+
+<!-- Mensagem Romântica -->
+<div class="mensagem">
+  <p>Te amo infinitamente 💖</p>
+</div>
+
+<!-- Copyright -->
+<div class="copyright">
+  © 2025 XTask - Feito com carinho para Anna & Murilo.
+</div>
+
+<script>
+  document.getElementById('botaoEntrar').addEventListener('click', () => {
+    document.getElementById('entrada').style.display = 'none';
+    const audio = document.getElementById('audio');
+    audio.play().catch(()=>console.log("Erro ao tocar música."));
+    const volumeAlert = document.getElementById('volumeAlert');
+    volumeAlert.style.display = 'block';
+    setTimeout(()=>{volumeAlert.style.display='none';},5000);
+  });
+
+  function atualizarContador(){
+    const inicio = new Date("2024-03-01T00:00:00");
+    const agora = new Date();
+    let anos = agora.getFullYear() - inicio.getFullYear();
+    let meses = agora.getMonth() - inicio.getMonth();
+    let dias = agora.getDate() - inicio.getDate();
+    let horas = agora.getHours() - inicio.getHours();
+    let minutos = agora.getMinutes() - inicio.getMinutes();
+    let segundos = agora.getSeconds() - inicio.getSeconds();
+    if(segundos<0){segundos+=60; minutos--;}
+    if(minutos<0){minutos+=60; horas--;}
+    if(horas<0){horas+=24; dias--;}
+    if(dias<0){meses--; let mesAnterior=new Date(agora.getFullYear(),agora.getMonth(),0); dias+=mesAnterior.getDate();}
+    if(meses<0){meses+=12; anos--;}
+    function fmt(num,singular,plural){return num===1? num+" "+singular : num+" "+plural;}
+    document.getElementById("tempo").innerText = `${fmt(anos,'ano','anos')}, ${fmt(meses,'mês','meses')}, ${fmt(dias,'dia','dias')}, ${fmt(horas,'hora','horas')}, ${fmt(minutos,'minuto','minutos')} e ${fmt(segundos,'segundo','segundos')}`;
+  }
+  setInterval(atualizarContador,1000);
+  atualizarContador();
+
+  function criarCoracao(){
+    const cor=document.createElement("div");
+    cor.classList.add("coracao");
+    cor.textContent="🤍";
+    cor.style.left=Math.random()*window.innerWidth+"px";
+    cor.style.animationDuration=(2+Math.random()*3)+"s";
+    document.body.appendChild(cor);
+    setTimeout(()=>cor.remove(),5000);
+  }
+  setInterval(criarCoracao,200);
+
+  const images=document.querySelectorAll('.carousel img');
+  let currentIndex=0;
+  function showNextImage(){
+    images[currentIndex].classList.remove('active');
+    currentIndex=(currentIndex+1)%images.length;
+    images[currentIndex].classList.add('active');
+  }
+  setInterval(showNextImage,4000);
+
+  const playBtn=document.getElementById('playPauseBtn');
+  const audioPlayer=document.getElementById('audio');
+  const progress=document.getElementById('progress');
+  const currentTime=document.getElementById('currentTime');
+
+  playBtn.addEventListener('click',()=>{
+    if(audioPlayer.paused){
+      audioPlayer.play();
+      playBtn.textContent='⏸️';
+    } else {
+      audioPlayer.pause();
+      playBtn.textContent='▶️';
+    }
+  });
+
+  audioPlayer.addEventListener('timeupdate',()=>{
+    if(audioPlayer.duration){
+      const percent=(audioPlayer.currentTime/audioPlayer.duration)*100;
+      progress.style.width=percent+'%';
+      const minCur=Math.floor(audioPlayer.currentTime/60);
+      const secCur=Math.floor(audioPlayer.currentTime%60).toString().padStart(2,'0');
+      const minTot=Math.floor(audioPlayer.duration/60);
+      const secTot=Math.floor(audioPlayer.duration%60).toString().padStart(2,'0');
+      currentTime.textContent=`${minCur}:${secCur} / ${minTot}:${secTot}`;
+    }
+  });
+
+  audioPlayer.addEventListener('play', () => {
+    playBtn.textContent='⏸️';
+  });
+
+  audioPlayer.addEventListener('pause', () => {
+    playBtn.textContent='▶️';
+  });
+
+  audioPlayer.addEventListener('ended',()=>{
+    playBtn.textContent='▶️';
+    progress.style.width='0%';
+  });
+</script>
+
+</body>
+</html>
+
+
