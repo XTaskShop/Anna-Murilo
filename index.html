@@ -27,7 +27,11 @@
     pointer-events: none;
     z-index: 0;
   }
-  @keyframes shimmer { from {transform: translate(0,0);} to {transform: translate(-100px,-100px);} }
+
+  @keyframes shimmer {
+    from {transform: translate(0,0);}
+    to {transform: translate(-100px,-100px);}
+  }
 
   .player-topo {
     width: 320px;
@@ -241,7 +245,7 @@
 
 <!-- Música -->
 <audio id="audio" loop>
-  <source src="https://github.com/XTaskShop/Anna-Murilo/blob/f7e71c5ce6cc0589b5e257c81bb178b586743681/Dj.mp3" type="audio/mpeg">
+  <source src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/main/Dj.mp3" type="audio/mpeg">
 </audio>
 
 <!-- Player acima do carrossel -->
@@ -260,9 +264,9 @@
 <!-- Carrossel -->
 <div class="carousel-container">
   <div class="carousel" id="carousel">
-    <img src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/refs/heads/main/IMG-20251007-WA0004.jpg" alt="Foto 1" class="active">
-    <img src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/refs/heads/main/IMG-20251007-WA0005.jpg" alt="Foto 2">
-    <img src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/refs/heads/main/IMG-20251007-WA0006.jpg" alt="Foto 3">
+    <img src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/main/IMG-20251007-WA0004.jpg" alt="Foto 1" class="active">
+    <img src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/main/IMG-20251007-WA0005.jpg" alt="Foto 2">
+    <img src="https://raw.githubusercontent.com/XTaskShop/Anna-Murilo/main/IMG-20251007-WA0006.jpg" alt="Foto 3">
   </div>
 </div>
 
@@ -315,7 +319,7 @@
   function criarCoracao(){
     const cor=document.createElement("div");
     cor.classList.add("coracao");
-    cor.textContent="";
+    cor.textContent="🤍";
     cor.style.left=Math.random()*window.innerWidth+"px";
     cor.style.animationDuration=(2+Math.random()*3)+"s";
     document.body.appendChild(cor);
@@ -375,5 +379,3 @@
 
 </body>
 </html>
-
-
